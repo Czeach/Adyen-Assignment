@@ -29,9 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner
 class PlacesViewModelUnitTest {
 
     @get: Rule
-    val instantTaskExecutorRule: TestRule = InstantTaskExecutorRule()
-
-    @get: Rule
     val testCoroutineRule = TestRule()
 
     @Mock
