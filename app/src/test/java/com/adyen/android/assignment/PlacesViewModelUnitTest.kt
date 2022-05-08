@@ -1,7 +1,6 @@
 package com.adyen.android.assignment
 
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.adyen.android.assignment.models.Result
 import com.adyen.android.assignment.repository.NearbyPlacesRepository
 import com.adyen.android.assignment.ui.nearbyPlaces.NearbyPlacesViewModel
@@ -17,7 +16,6 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
