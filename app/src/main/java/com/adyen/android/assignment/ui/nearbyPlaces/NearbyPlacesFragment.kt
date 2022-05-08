@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.adyen.android.assignment.databinding.NearbyPlacesFragmentBinding
+import com.adyen.android.assignment.ui.nearbyPlaces.adapter.NearbyPlacesAdapter
+import com.adyen.android.assignment.ui.nearbyPlaces.adapter.NearbyPlacesDiffCallback
 import com.adyen.android.assignment.utils.NearbyPlacesState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -19,6 +22,8 @@ class NearbyPlacesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by activityViewModels<NearbyPlacesViewModel>()
+
+    private val nearbyPlacesAdapter by lazy { NearbyPlacesAdapter(NearbyPlacesDiffCallback) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +43,11 @@ class NearbyPlacesFragment : Fragment() {
 
         viewModel.getNearbyPlaces(location = args)
 
+        binding.nearbyPlacesList.apply {
+            adapter = nearbyPlacesAdapter
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        }
+
     }
 
     private fun observeViewModel() {
@@ -51,7 +61,7 @@ class NearbyPlacesFragment : Fragment() {
                         Log.d("LOADING", it.message)
                     }
                     is NearbyPlacesState.Success -> {
-                        Log.d("LOADING", it.data.toString())
+                        nearbyPlacesAdapter.submitList(it.data)
                     }
                     else -> {}
                 }
