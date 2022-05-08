@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.lang.Exception
+import retrofit2.HttpException
 
 class NearbyPlacesRepository(
     private val apiService: ApiService
@@ -22,15 +22,15 @@ class NearbyPlacesRepository(
             val response = apiService.getNearbyPlaces(location)
 
             try {
-                if (response.results == null) {
-                    emit(DataState.error(message = response.message.toString()))
+                if (!response.isSuccessful) {
+                    emit(DataState.error(message = "Error ${response.code()}"))
                 } else {
-                    emit(DataState.data(data = response.results))
+                    emit(DataState.data(data = response.body()?.results))
                 }
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
                 emit(
                     DataState.error(
-                        message = response.message ?: e.message.toString()
+                        message = e.code().toString()
                     )
                 )
             }

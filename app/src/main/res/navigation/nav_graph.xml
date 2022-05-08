@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/nearbyPlacesFragment"
         android:name="com.adyen.android.assignment.ui.nearbyPlaces.NearbyPlacesFragment"
-        android:label="nearby_places_fragment"
+        android:label="Nearby Places"
         tools:layout="@layout/nearby_places_fragment" >
         <argument
             android:name="location"
