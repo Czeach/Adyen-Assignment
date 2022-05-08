@@ -7,8 +7,10 @@ import com.adyen.android.assignment.model.NearbyPlaces
 import com.adyen.android.assignment.utils.Constants
 import io.ktor.client.*
 import io.ktor.client.features.*
+import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import java.io.IOException
 
 class ApiServiceImpl(
     private val client: HttpClient,
@@ -19,8 +21,8 @@ class ApiServiceImpl(
     override suspend fun getNearbyPlaces(location: String): NearbyPlaces {
         return try {
             client.get {
-                Url(Constants.BASE_URL)
-                accept(ContentType.Application.Json)
+                Url(Constants.NEARBY_PLACES)
+                header(HttpHeaders.Accept, ContentType.Application.Json)
                 header(HttpHeaders.Authorization, BuildConfig.API_KEY)
             }
         } catch (e: ClientRequestException) {
@@ -39,5 +41,11 @@ class ApiServiceImpl(
                 message = e.response.status.toString()
             )
         }
+//        catch (e: IOException) {
+//            Log.e("DataRedirectResponseException", "Error: ${e.message.toString()}")
+//            NearbyPlaces(
+//                message = e.message.toString()
+//            )
+//        }
     }
 }

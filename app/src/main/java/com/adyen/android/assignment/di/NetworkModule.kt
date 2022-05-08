@@ -26,7 +26,8 @@ object NetworkModule {
     fun provideHttpClient(): HttpClient {
         return HttpClient(Android) {
             install(Logging) {
-                level = LogLevel.ALL
+                logger = Logger.DEFAULT
+                level = LogLevel.HEADERS
             }
             install(JsonFeature) {
                 serializer = KotlinxSerializer(kotlinx.serialization.json.Json {

@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.navigation.fragment.findNavController
 import com.adyen.android.assignment.databinding.FragmentHomeBinding
 import com.adyen.android.assignment.utils.Constants
 import com.google.android.gms.location.*
@@ -25,6 +26,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private var locationString = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +38,14 @@ class HomeFragment : Fragment() {
         getLocation()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.nearbyPlacesButton.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToNearbyPlacesFragment(locationString))
+        }
     }
 
     private fun getLocation() {
@@ -49,7 +60,8 @@ class HomeFragment : Fragment() {
                         if (location == null) {
                             requestLocationData()
                         } else {
-                            Toast.makeText(requireContext(), location.latitude.toString(), Toast.LENGTH_LONG).show()
+                            locationString = "${location.latitude},${location.longitude}"
+                            Toast.makeText(requireContext(), locationString, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
