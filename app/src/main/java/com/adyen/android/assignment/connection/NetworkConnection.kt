@@ -1,16 +1,13 @@
 package com.adyen.android.assignment.connection
 
 import android.annotation.TargetApi
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.net.*
 import android.os.Build
 import androidx.lifecycle.LiveData
 
 class NetworkConnection(val context: Context) : LiveData<Boolean>() {
-    var connectionManger: ConnectivityManager =
+    private var connectionManger: ConnectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     lateinit var networkCallback: ConnectivityManager.NetworkCallback
@@ -20,16 +17,10 @@ class NetworkConnection(val context: Context) : LiveData<Boolean>() {
         updateConnection()
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> {
-                connectionManger.registerDefaultNetworkCallback(NetworkConnectioncallback())
-            }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> {
-                lollipopNetworkRequest()
+                connectionManger.registerDefaultNetworkCallback(networkConnectionCallback())
             }
             else -> {
-                context.registerReceiver(
-                    networkReciever(),
-                    IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-                )
+                lollipopNetworkRequest()
             }
         }
     }
@@ -42,38 +33,27 @@ class NetworkConnection(val context: Context) : LiveData<Boolean>() {
             .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
         connectionManger.registerNetworkCallback(
             requestBuilder.build(),
-            NetworkConnectioncallback()
+            networkConnectionCallback()
         )
     }
 
-    fun NetworkConnectioncallback(): ConnectivityManager.NetworkCallback {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            networkCallback = object : ConnectivityManager.NetworkCallback() {
-                override fun onLost(network: Network) {
-                    super.onLost(network)
-                    postValue(false)
-                }
-
-                override fun onAvailable(network: Network) {
-                    super.onAvailable(network)
-                    postValue(true)
-                }
+    private fun networkConnectionCallback(): ConnectivityManager.NetworkCallback {
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                postValue(false)
             }
-            return networkCallback
-        } else {
-            throw IllegalAccessError("Error!")
+
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                postValue(true)
+            }
         }
+        return networkCallback
 
     }
 
-    fun networkReciever() = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            updateConnection()
-        }
-
-    }
-
-    fun updateConnection() {
+    private fun updateConnection() {
         val activeNetwork: NetworkInfo? = connectionManger.activeNetworkInfo
         postValue((activeNetwork?.isConnected == true))
     }

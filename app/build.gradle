@@ -96,7 +96,4 @@ dependencies {
 
     //Lottie animation
     implementation("com.airbnb.android:lottie:3.7.0")
-
-    // Progress button library
-    implementation("com.github.razir.progressbutton:progressbutton:2.1.0")
 }

@@ -3,17 +3,14 @@ package com.adyen.android.assignment
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.adyen.android.assignment.models.Result
-import com.adyen.android.assignment.network.ApiService
 import com.adyen.android.assignment.repository.NearbyPlacesRepository
 import com.adyen.android.assignment.ui.nearbyPlaces.NearbyPlacesViewModel
 import com.adyen.android.assignment.utils.DataState
 import com.adyen.android.assignment.utils.NearbyPlacesState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.setMain
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert

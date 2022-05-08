@@ -1,7 +1,6 @@
 package com.adyen.android.assignment.ui.home
 
 import android.Manifest
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,18 +14,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.navigation.fragment.findNavController
 import com.adyen.android.assignment.connection.NetworkConnection
 import com.adyen.android.assignment.databinding.FragmentHomeBinding
 import com.adyen.android.assignment.utils.*
-import com.github.razir.progressbutton.hideDrawable
-import com.github.razir.progressbutton.hideProgress
-import com.github.razir.progressbutton.isProgressActive
-import com.github.razir.progressbutton.showProgress
 import com.google.android.gms.location.*
 
 class HomeFragment : Fragment() {
@@ -66,7 +58,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun observeNetworkState() {
+    private fun observeNetworkState() {
         networkConnection = NetworkConnection(requireContext())
         networkConnection.observe(viewLifecycleOwner) { isConnected ->
             if (isConnected) {
