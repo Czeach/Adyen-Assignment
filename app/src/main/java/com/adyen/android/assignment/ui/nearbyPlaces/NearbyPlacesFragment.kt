@@ -1,7 +1,6 @@
 package com.adyen.android.assignment.ui.nearbyPlaces
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +12,9 @@ import com.adyen.android.assignment.databinding.NearbyPlacesFragmentBinding
 import com.adyen.android.assignment.ui.nearbyPlaces.adapter.NearbyPlacesAdapter
 import com.adyen.android.assignment.ui.nearbyPlaces.adapter.NearbyPlacesDiffCallback
 import com.adyen.android.assignment.utils.NearbyPlacesState
+import com.adyen.android.assignment.utils.hideView
+import com.adyen.android.assignment.utils.showErrorDialog
+import com.adyen.android.assignment.utils.showView
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -55,12 +57,14 @@ class NearbyPlacesFragment : Fragment() {
             viewModel.nearbyPlacesState.collect {
                 when (it) {
                     is NearbyPlacesState.Loading -> {
-                        Log.d("LOADING", "TRUE")
+                        binding.loader.showView()
                     }
                     is NearbyPlacesState.Error -> {
-                        Log.d("LOADING", it.message)
+                        binding.loader.hideView()
+                        requireContext().showErrorDialog(it.message)
                     }
                     is NearbyPlacesState.Success -> {
+                        binding.loader.hideView()
                         nearbyPlacesAdapter.submitList(it.data)
                     }
                     else -> {}

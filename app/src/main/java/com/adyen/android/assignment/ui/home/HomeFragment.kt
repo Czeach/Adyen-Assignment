@@ -1,22 +1,30 @@
 package com.adyen.android.assignment.ui.home
 
 import android.Manifest
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.fragment.findNavController
 import com.adyen.android.assignment.databinding.FragmentHomeBinding
-import com.adyen.android.assignment.utils.Constants
+import com.adyen.android.assignment.utils.*
+import com.github.razir.progressbutton.hideDrawable
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.isProgressActive
+import com.github.razir.progressbutton.showProgress
 import com.google.android.gms.location.*
 
 class HomeFragment : Fragment() {
@@ -44,7 +52,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.nearbyPlacesButton.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToNearbyPlacesFragment(locationString))
+            if (!checkForPermissions()) {
+                requestPermissions()
+            } else if (!isLocationEnabled()) {
+                openSettings()
+            } else {
+                launchFragment(HomeFragmentDirections.actionHomeFragmentToNearbyPlacesFragment(locationString))
+            }
         }
     }
 
@@ -61,16 +75,27 @@ class HomeFragment : Fragment() {
                             requestLocationData()
                         } else {
                             locationString = "${location.latitude},${location.longitude}"
-                            Toast.makeText(requireContext(), locationString, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
             } else {
-                Toast.makeText(requireContext(), "Turn on location", Toast.LENGTH_LONG).show()
+                openSettings()
             }
         } else {
             requestPermissions()
         }
+    }
+
+    private fun openSettings() {
+        val positiveButtonClick = DialogInterface.OnClickListener { _, _ ->
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+        }
+
+        requireContext().showErrorDialog(
+            message = "Turn on Location",
+            listener = positiveButtonClick
+        )
     }
 
     private fun checkForPermissions(): Boolean {
