@@ -1,6 +1,6 @@
 package com.adyen.android.assignment.repository
 
-import com.adyen.android.assignment.model.Result
+import com.adyen.android.assignment.models.Result
 import com.adyen.android.assignment.network.ApiService
 import com.adyen.android.assignment.utils.DataState
 import kotlinx.coroutines.Dispatchers

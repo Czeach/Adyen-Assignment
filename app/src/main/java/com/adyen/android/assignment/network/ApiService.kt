@@ -1,8 +1,17 @@
 package com.adyen.android.assignment.network
 
-import com.adyen.android.assignment.model.NearbyPlaces
+import com.adyen.android.assignment.models.NearbyPlaces
+import com.adyen.android.assignment.utils.Constants
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Query
+
 
 interface ApiService {
 
-    suspend fun getNearbyPlaces(location: String): NearbyPlaces
+    @Headers(Constants.ACCEPT, Constants.AUTHORIZATION)
+    @GET(Constants.NEARBY_PLACES)
+    suspend fun getNearbyPlaces(
+        @Query("ll") location: String
+    ): NearbyPlaces
 }

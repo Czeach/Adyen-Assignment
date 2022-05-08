@@ -1,20 +1,16 @@
 package com.adyen.android.assignment.di
 
 import com.adyen.android.assignment.network.ApiService
-import com.adyen.android.assignment.network.ApiServiceImpl
 import com.adyen.android.assignment.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -23,39 +19,40 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(): HttpClient {
-        return HttpClient(Android) {
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.HEADERS
-            }
-            install(JsonFeature) {
-                serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    encodeDefaults = true
-                })
-            }
-            install(HttpTimeout) {
-                requestTimeoutMillis = 15000L
-                connectTimeoutMillis = 15000L
-                socketTimeoutMillis = 15000L
-            }
-            defaultRequest {
-                if (method != HttpMethod.Get) contentType(ContentType.Application.Json)
-                accept(ContentType.Application.Json)
-            }
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+            level = HttpLoggingInterceptor.Level.HEADERS
+            level = HttpLoggingInterceptor.Level.BASIC
         }
     }
 
     @Provides
     @Singleton
-    fun provideApiService(
-        client: HttpClient
-    ): ApiService {
-        return ApiServiceImpl(
-            client = client,
-            baseUrl = Constants.BASE_URL
-        )
+    fun provideHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+        return OkHttpClient
+            .Builder()
+            .connectTimeout(500, TimeUnit.SECONDS)
+            .readTimeout(500, TimeUnit.SECONDS)
+            .writeTimeout(500, TimeUnit.SECONDS)
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(Constants.BASE_URL)
+            .client(okHttpClient)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): ApiService {
+        return retrofit.create(ApiService::class.java)
     }
 }
