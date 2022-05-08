@@ -67,6 +67,7 @@ class NearbyPlacesFragment : Fragment() {
                     is NearbyPlacesState.Success -> {
                         binding.loader.hideView()
                         nearbyPlacesAdapter.submitList(it.data)
+                        viewModel.nearbyPlacesState.value = null
                     }
                     else -> {}
                 }
@@ -76,6 +77,11 @@ class NearbyPlacesFragment : Fragment() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }

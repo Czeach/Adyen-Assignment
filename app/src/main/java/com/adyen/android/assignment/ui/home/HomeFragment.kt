@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.fragment.findNavController
+import com.adyen.android.assignment.connection.NetworkConnection
 import com.adyen.android.assignment.databinding.FragmentHomeBinding
 import com.adyen.android.assignment.utils.*
 import com.github.razir.progressbutton.hideDrawable
@@ -36,6 +37,8 @@ class HomeFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var locationString = ""
+
+    private lateinit var networkConnection: NetworkConnection
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +61,18 @@ class HomeFragment : Fragment() {
             } else if (!isLocationEnabled()) {
                 openSettings()
             } else {
+                observeNetworkState()
+            }
+        }
+    }
+
+    fun observeNetworkState() {
+        networkConnection = NetworkConnection(requireContext())
+        networkConnection.observe(viewLifecycleOwner) { isConnected ->
+            if (isConnected) {
                 launchFragment(HomeFragmentDirections.actionHomeFragmentToNearbyPlacesFragment(locationString))
+            } else {
+                requireContext().showErrorDialog("You do not have an active internet connection. Please establish a connection and try again.")
             }
         }
     }
@@ -164,6 +178,11 @@ class HomeFragment : Fragment() {
                 getLocation()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }
