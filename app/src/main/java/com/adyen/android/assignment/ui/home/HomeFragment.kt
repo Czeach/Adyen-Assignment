@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -60,6 +61,10 @@ class HomeFragment : Fragment() {
                 launchFragment(HomeFragmentDirections.actionHomeFragmentToNearbyPlacesFragment(locationString))
             }
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
     }
 
     private fun getLocation() {

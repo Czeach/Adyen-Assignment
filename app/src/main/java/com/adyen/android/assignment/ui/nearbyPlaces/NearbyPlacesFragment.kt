@@ -1,5 +1,6 @@
 package com.adyen.android.assignment.ui.nearbyPlaces
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -73,5 +74,8 @@ class NearbyPlacesFragment : Fragment() {
         }
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+    }
 
 }
